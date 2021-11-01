@@ -75,10 +75,10 @@ def distr_Px(samples, pval):
     fval = np.interp(pval, samples_cum, samples_sorted) # x and y needs to be flipped for np.interp
     return fval
 
-def distri_plot(samples, plot_type='pdf', xlabel='x'):
+def distri_plot(samples, plot_type='pdf', xlabel='x', nb_bar=100):
 
     # Plot - Configuration
-    nb_bar = 100
+    #nb_bar = 100
     bin_size = (samples.max()-samples.min()) / nb_bar
     histo_norm = 'probability'  # '' 'probability' 'density' 'probability density' (used by plotly histogram)
 

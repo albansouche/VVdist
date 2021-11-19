@@ -148,3 +148,37 @@ def contri_plot(contri, xlabel='x'):
 
     return
 
+
+def distri_cum_multiplot(traces, leg_names, leg_title='',  xlabel='x', html_fig=False):
+    ylabel = 'Cumulative probability' 
+    fig = go.Figure()
+    for i_, samples in enumerate(traces): 
+        # Calculation of the cumulative distribution (simple maths) 
+        samples_sorted = np.sort(samples)
+        samples_cum = 1. * np.arange(len(samples_sorted)) / (len(samples_sorted)-1)
+        # Estimation of the quantiles (percentiles) P10 P50 P90
+        y_Pxx = [0.1, 0.5, 0.9]
+        x_Pxx = np.interp(y_Pxx, samples_cum, samples_sorted) # x and y needs to be flipped for np.interp
+        x_Pxx = x_Pxx[::-1]
+        anno_Pxx = ['<b> P10 (', '<b> P50 (', '<b> P90 (']
+        # Plot the result
+        fig.add_trace(go.Scatter(x=samples_sorted, y=1-samples_cum, name=leg_names[i_]))
+        fig.update_layout(showlegend=True)
+        #fig.add_trace(go.Scatter(x=np.hstack((samples_sorted,samples_sorted[0])) , y=np.hstack((1-samples_cum, 0)), fill="toself", mode= 'none'))
+    # Reverse trace for coloring (largest x-values curve is blue and then red...)
+    fig.data=fig.data[::-1]
+    # Add Pxx points and texts
+    anno_text = [anno_Pxx[i]+str(np.format_float_scientific(k, precision=2, exp_digits=1))+')</b>' for i,k in enumerate(x_Pxx)]
+    fig.add_trace(go.Scatter(x=x_Pxx, y=y_Pxx, mode="markers+text", line_color='black', text=anno_text, textposition="middle right", showlegend=False))    
+    # Add Pxx lines for style
+    #for j in range(len(x_Pxx)):
+    #    fig.add_trace(go.Scatter(x=[samples.min(), x_Pxx[j]], y=[y_Pxx[j], y_Pxx[j]] , mode="lines", line_color='black',showlegend=False))
+    fig.update_layout(xaxis_title="<b>"+xlabel+"</b>", 
+                    yaxis_title="<b>"+ylabel+"</b>",
+                    legend=dict(title=leg_title, yanchor="top",y=0.99, xanchor="right", x=.74) )
+
+    fig.update_xaxes(domain=(0.25, 0.75))
+
+    fig.show()
+    if html_fig is not False:
+        fig.write_html(html_fig)

@@ -302,5 +302,41 @@ def contri_plot(contri, xlabel='x', max_first=0, html_fig=False):
 
 
 
+def plot_sunburst(Ws, Cs, Ps, elements, lists,labels,Px,title,html_fig):
 
+    # Create empty indx_ and list_ to map the elements lists to plot   
+    indx_  = {}
+    list_ = {}
+    for i in range(len(lists)):
+        indx_[str(i)] = []
+        list_[str(i)] = []
+
+    # fill up indx_ and list_
+    for ie, e in enumerate(elements):
+        for ilist in range(len(lists)):
+            if np.any(np.isin(lists[ilist],e)):
+                indx_[str(ilist)].append(int(ie))
+                list_[str(ilist)].append(e)
+
+
+    for il in range(len(lists)):
+        indx_easy =[]
+        indx_rees =[]
+        indx_others = []
+        list_easy = []
+        list_rees = []
+        list_others = []
+
+    for ie, e in enumerate(elements):
+        if np.any(np.isin(easy_ref,e)):
+            indx_easy.append(int(ie))
+            list_easy.append(e)
+        elif np.any(np.isin(rees,e)):
+            indx_rees.append(int(ie))
+            list_rees.append(e)
+        else:
+            indx_others.append(int(ie))
+            list_others.append(e)
+
+    return
 

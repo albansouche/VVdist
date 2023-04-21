@@ -78,6 +78,31 @@ def distri_area_repose(distri_slope, cum_area_data):
     return distri_area
 
 
+def distri_sum(dict_):
+    value = 0
+    value_mean_inputs = 0
+    for arg in dict_.values():
+        value += arg
+        value_mean_inputs += np.array(arg).mean()
+    contri = {}
+    for ik, key in enumerate(dict_.keys()):
+        arg = list(dict_.values())[ik]
+        if np.array(arg).size>1: # distribution array 
+            P05 = distr_Px(arg, 0.95)
+            P95 = distr_Px(arg, 0.05)
+            if abs(np.array(arg).mean())>0:
+                min_ = value_mean_inputs / np.array(arg).mean() * P95
+                max_ = value_mean_inputs / np.array(arg).mean() * P05 
+            else:
+                min_=value_mean_inputs
+                max_=value_mean_inputs
+        elif np.array(arg).size==1: # single value
+            min_ = value_mean_inputs
+            max_ = value_mean_inputs
+        contri[key] = {'percent': [-(value_mean_inputs-min_)/value_mean_inputs*100 , (max_-value_mean_inputs)/value_mean_inputs*100] }
+    return value, contri
+
+
 def distri_multiply(dict_):
     value = 1
     value_mean_inputs = 1
@@ -152,7 +177,7 @@ def distri_sum_elements(dict_vol, dict_conc, dict_price):
             min_ = value_mean_inputs
             max_ = value_mean_inputs
         contri[key] = {'percent': [-(value_mean_inputs-min_)/value_mean_inputs*100 , (max_-value_mean_inputs)/value_mean_inputs*100] }
-    # Factor_2 price contributions 
+    # Factor_3 price contributions 
     for ik, key in enumerate(dict_price.keys()):
         arg = list(dict_price.values())[ik]
         if np.array(arg).size>1: # distribution array 
@@ -226,6 +251,9 @@ def distri_plot(samples, plot_type='pdf', xlabel='x', nb_bar=100, html_fig=False
                         yaxis_title="<b>"+ylabel+"</b>",
                         showlegend=False)
         fig.update_xaxes(domain=(0.25, 0.75))
+
+    fig.update_layout(margin = dict(t=20, l=20, r=20, b=20))
+    fig.update_layout(autosize=False, width=950)
     fig.show()
 
     if html_fig is not False:
@@ -261,7 +289,11 @@ def distri_cum_multiplot(traces, leg_names, leg_title='',  xlabel='x', html_fig=
                     yaxis_title="<b>"+ylabel+"</b>",
                     legend_title=leg_title)
     fig.update_xaxes(domain=(0.25, 0.75))
+
+    fig.update_layout(margin = dict(t=20, l=20, r=20, b=20))
+    fig.update_layout(autosize=False, width=950)
     fig.show()
+
     if html_fig is not False:
         fig.write_html(html_fig)
 
@@ -293,6 +325,11 @@ def contri_plot(contri, xlabel='x', max_first=0, html_fig=False):
     fig.update_traces(marker_line_color='rgb(8,48,107)', marker_line_width=1.5, opacity=0.6)
     fig.update_layout(xaxis_title="<b>"+xlabel+"</b>", barmode='relative', showlegend=False,
                       autosize=True)
+
+    fig.update_xaxes(range=[0, max(max_)+5])
+
+    fig.update_layout(margin = dict(t=20, l=20, r=20, b=20))
+    fig.update_layout(autosize=False, width=950)
     fig.show()
 
     if html_fig is not False:
